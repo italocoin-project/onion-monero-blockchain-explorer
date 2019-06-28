@@ -276,7 +276,7 @@ MempoolStatus::read_network_info()
     local_copy.target_height              = rpc_network_info.target_height;
     local_copy.difficulty                 = rpc_network_info.difficulty;
     local_copy.target                     = rpc_network_info.target;
-    local_copy.hash_rate                  = (rpc_network_info.difficulty/120);
+    local_copy.hash_rate                  = (rpc_network_info.difficulty/120); //yess
     local_copy.tx_count                   = rpc_network_info.tx_count;
     local_copy.tx_pool_size               = rpc_network_info.tx_pool_size;
     local_copy.alt_blocks_count           = rpc_network_info.alt_blocks_count;
