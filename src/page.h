@@ -551,7 +551,7 @@ page(MicroCore* _mcore,
 
         // /js/all_in_one.js file does not exist. it is generated on the fly
         // from the above real files.
-        js_html_files_all_in_one = "<script src=\"/js/all_in_one.js\"></script>";
+        js_html_files_all_in_one = "<script src=\"/js/all_in_one\"></script>";
     }
 
 }
