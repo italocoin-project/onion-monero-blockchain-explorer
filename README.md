@@ -25,25 +25,29 @@ Monero C++ libraries, but also demonstrates how to use:
 
 Tor users:
 
- - [http://dvwae436pd7nt4bc.onion](http://dvwae436pd7nt4bc.onion) (Front-end templates are [maintained by @suhz](https://github.com/suhz/onion-monero-blockchain-explorer/tree/moneroexplorer.com/src/templates)).
+ - [http://dvwae436pd7nt4bc.onion](http://dvwae436pd7nt4bc.onion) (Down for now: front-end templates are [maintained by @suhz](https://github.com/suhz/onion-monero-blockchain-explorer/tree/moneroexplorer.com/src/templates)).
 
 Clearnet versions:
  - [https://xmrchain.net/](https://xmrchain.net/) - https enabled, most popular and very stable.
- - [https://MoneroExplorer.com/](https://moneroexplorer.com/) - nice looking one, https enabled.
  - [https://monerohash.com/explorer/](https://monerohash.com/explorer/) - nice looking one, https enabled.
  - [http://explore.MoneroWorld.com](http://explore.moneroworld.com) - same as the second one.
  - [http://monerochain.com/](http://monerochain.com/) - JSON API based, multiple nodes.   
  - [https://blox.minexmr.com/](https://blox.minexmr.com/) - - https enabled.
+ - [https://community.xmr.to/explorer/mainnet/](https://community.xmr.to/explorer/mainnet/)
+ - [https://exp.xmr.sk/](https://exp.xmr.sk/)
+
 
 Testnet version:
 
  - [https://testnet.xmrchain.com/](https://testnet.xmrchain.com/) - https enabled.
- - [https://explorer.monero-otc.com/](https://explorer.monero-otc.com/) - https enabled.
+ - [https://community.xmr.to/explorer/testnet/](https://community.xmr.to/explorer/testnet/)
 
 Stagenet version:
-
+ 
  - [https://stagenet.xmrchain.net/](https://stagenet.xmrchain.net/)
+ - [http://139.162.60.17:8082/](http://139.162.60.17:8082/) 
  - [http://162.210.173.150:8083/](http://162.210.173.150:8083/)
+ - [https://community.xmr.to/explorer/stagenet/](https://community.xmr.to/explorer/stagenet/)
 
 i2p users (main Monero network):
 
@@ -86,41 +90,28 @@ Current development branch:
 
  - https://github.com/moneroexamples/onion-monero-blockchain-explorer/tree/devel
 
-
+Note: `devel` branch of the explorer follows `master` branch of the monero.
 
 ## Compilation on Ubuntu 16.04/18.04
 
-##### Compile latest Monero version (0.13)
 
-Download and compile recent Monero into your home folder:
+#### Monero download and compilation
 
-```bash
-# first install monero dependecines
-sudo apt update
+To download and compile recent Monero follow instructions
+in the following link:
 
-sudo apt install git build-essential cmake libboost-all-dev miniupnpc libunbound-dev graphviz doxygen libunwind8-dev pkg-config libssl-dev libcurl4-openssl-dev libgtest-dev libreadline-dev libzmq3-dev libsodium-dev libhidapi-dev libhidapi-libusb0
-
-# go to home folder
-cd ~
-
-git clone --recursive https://github.com/monero-project/monero
-
-cd monero/
-
-
-USE_SINGLE_BUILDDIR=1 make
-```
+https://github.com/moneroexamples/monero-compilation/blob/master/README.md
 
 ##### Compile and run the explorer
 
-Once the Monero is compiles, the explorer can be downloaded and compiled
+Once the Monero compiles, the explorer can be downloaded and compiled
 as follows:
 
 ```bash
 # go to home folder if still in ~/monero
 cd ~
 
-# download the source code
+# download the source code 
 git clone https://github.com/moneroexamples/onion-monero-blockchain-explorer.git
 
 # enter the downloaded sourced code folder
@@ -131,12 +122,6 @@ mkdir build && cd build
 
 # create the makefile
 cmake ..
-
-# altearnatively can use: cmake -DMONERO_DIR=/path/to/monero_folder ..
-# if monero is not in ~/monero
-#
-# also can build with ASAN (sanitizers), for example
-# cmake -DSANITIZE_ADDRESS=On ..
 
 # compile
 make
