@@ -275,7 +275,6 @@ MempoolStatus::read_network_info()
     local_copy.height                     = rpc_network_info.height;
     local_copy.target_height              = rpc_network_info.target_height;
     local_copy.difficulty                 = rpc_network_info.difficulty;
-    local_copy.difficulty_top64           = rpc_network_info.difficulty_top64;
     local_copy.target                     = rpc_network_info.target;
     local_copy.hash_rate                  = (rpc_network_info.difficulty/120);
     local_copy.tx_count                   = rpc_network_info.tx_count;
@@ -287,7 +286,6 @@ MempoolStatus::read_network_info()
     local_copy.nettype                    = rpc_network_info.testnet ? cryptonote::network_type::TESTNET : 
                                             rpc_network_info.stagenet ? cryptonote::network_type::STAGENET : cryptonote::network_type::MAINNET;
     local_copy.cumulative_difficulty      = rpc_network_info.cumulative_difficulty;
-    local_copy.cumulative_difficulty_top64 = rpc_network_info.cumulative_difficulty_top64;
     local_copy.block_size_limit           = rpc_network_info.block_size_limit;
     local_copy.block_size_median          = rpc_network_info.block_size_median;
     local_copy.block_weight_limit         = rpc_network_info.block_weight_limit;
