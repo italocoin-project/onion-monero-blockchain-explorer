@@ -1,8 +1,8 @@
 body {
     margin: 0;
     padding: 0;
-    color: white;
-    background-color: black;
+    color: black;
+    background-color: white;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -33,22 +33,22 @@ td {
 
 a:link {
     text-decoration: none;
-    color: white;
+    color: black;
 }
 
 a:visited {
     text-decoration: none;
-    color: white;
+    color: black;
 }
 
 a:hover {
     text-decoration: underline;
-    color: white;
+    color: black;
 }
 
 a:active {
     text-decoration: none;
-    color: white;
+    color: black;
 }
 
 form {
@@ -80,7 +80,7 @@ form {
 }
 
 .tab label {
-    background: black;
+    background: gray;
     padding: 10px;
     border: 1px solid #ccc;
     margin-left: -1px;
@@ -96,7 +96,7 @@ form {
     position: absolute;
     top: 28px;
     left: 0;
-    background: black;
+    background: gray;
     right: 0;
     bottom: 0;
     padding: 20px;

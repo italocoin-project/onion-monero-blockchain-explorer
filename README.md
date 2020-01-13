@@ -29,6 +29,7 @@ Tor users:
 
 Clearnet versions:
  - [https://xmrchain.net/](https://xmrchain.net/) - https enabled, most popular and very stable.
+ - [https://monero.exan.tech/](https://monero.exan.tech/) - https enabled, custom theme.
  - [https://monerohash.com/explorer/](https://monerohash.com/explorer/) - nice looking one, https enabled.
  - [http://explore.MoneroWorld.com](http://explore.moneroworld.com) - same as the second one.
  - [http://monerochain.com/](http://monerochain.com/) - JSON API based, multiple nodes.   
@@ -45,6 +46,7 @@ Testnet version:
 Stagenet version:
  
  - [https://stagenet.xmrchain.net/](https://stagenet.xmrchain.net/)
+ - [https://monero-stagenet.exan.tech/](https://monero-stagenet.exan.tech/)
  - [http://139.162.60.17:8082/](http://139.162.60.17:8082/) 
  - [http://162.210.173.150:8083/](http://162.210.173.150:8083/)
  - [https://community.xmr.to/explorer/stagenet/](https://community.xmr.to/explorer/stagenet/)
@@ -65,7 +67,6 @@ Alternative block explorers:
 The key features of the Onion Monero Blockchain Explorer are:
 
  - no cookies, no web analytics trackers, no images,
- - by default no JavaScript, but can be enabled for client side decoding and proving transactions,
  - open sourced,
  - made fully in C++,
  - showing encrypted payments ID,
@@ -82,6 +83,7 @@ The key features of the Onion Monero Blockchain Explorer are:
  - can provide total amount of all miner fees,
  - decoding encrypted payment id,
  - decoding outputs and proving txs sent to sub-address.
+ - listing RandomX code for each block
 
 
 ## Development branch
@@ -90,7 +92,7 @@ Current development branch:
 
  - https://github.com/moneroexamples/onion-monero-blockchain-explorer/tree/devel
 
-Note: `devel` branch of the explorer follows `master` branch of the monero.
+Note: `devel` branch of the explorer follows `master` branch of the monero!
 
 ## Compilation on Ubuntu 16.04/18.04
 
@@ -160,6 +162,7 @@ xmrblocks, Onion Monero Blockchain Explorer:
   -t [ --testnet ] [=arg(=1)] (=0)      use testnet blockchain
   -s [ --stagenet ] [=arg(=1)] (=0)     use stagenet blockchain
   --enable-pusher [=arg(=1)] (=0)       enable signed transaction pusher
+  --enable-randomx [=arg(=1)] (=0)      enable generation of randomx code
   --enable-mixin-details [=arg(=1)] (=0)
                                         enable mixin details for key images,
                                         e.g., timescale, mixin of mixins, in tx
@@ -168,13 +171,9 @@ xmrblocks, Onion Monero Blockchain Explorer:
                                         enable key images file checker
   --enable-output-key-checker [=arg(=1)] (=0)
                                         enable outputs key file checker
-  --enable-json-api [=arg(=1)] (=1)     enable JSON REST api
-  --enable-tx-cache [=arg(=1)] (=0)     enable caching of transaction details
-  --show-cache-times [=arg(=1)] (=0)    show times of getting data from cache
-                                        vs no cache
-  --enable-block-cache [=arg(=1)] (=0)  enable caching of block details
-  --enable-js [=arg(=1)] (=0)           enable checking outputs and proving txs
-                                        using JavaScript on client side
+  --enable-json-api [=arg(=1)] (=0)     enable JSON REST api
+  --enable-as-hex [=arg(=1)] (=0)       enable links to provide hex
+                                        represtations of a tx and a block
   --enable-autorefresh-option [=arg(=1)] (=0)
                                         enable users to have the index page on
                                         autorefresh
@@ -182,6 +181,7 @@ xmrblocks, Onion Monero Blockchain Explorer:
                                         enable Monero total emission monitoring
                                         thread
   -p [ --port ] arg (=8081)             default explorer port
+  -x [ --bindaddr ] arg (=0.0.0.0)      default bind address for the explorer
   --testnet-url arg                     you can specify testnet url, if you run
                                         it on mainnet or stagenet. link will
                                         show on front page to testnet explorer
@@ -197,6 +197,9 @@ xmrblocks, Onion Monero Blockchain Explorer:
                                         for mempool data for the front page
   --mempool-refresh-time arg (=5)       time, in seconds, for each refresh of
                                         mempool state
+  -c [ --concurrency ] arg (=0)         number of threads handling http
+                                        queries. Default is 0 which means it is
+                                        based you on the cpu
   -b [ --bc-path ] arg                  path to lmdb folder of the blockchain,
                                         e.g., ~/.bitmonero/lmdb
   --ssl-crt-file arg                    path to crt file for ssl (https)
@@ -204,7 +207,9 @@ xmrblocks, Onion Monero Blockchain Explorer:
   --ssl-key-file arg                    path to key file for ssl (https)
                                         functionality
   -d [ --deamon-url ] arg (=http:://127.0.0.1:13102)
-                                        Monero deamon url
+                                        Italo daemon url
+  --daemon-login arg                    Specify username[:password] for daemon 
+                                        RPC client
 ```
 
 Example usage, defined as bash aliases.
@@ -216,8 +221,6 @@ alias xmrblocksmainnet='~/onion-monero-blockchain-explorer/build/xmrblocks    --
 # for testnet explorer
 alias xmrblockstestnet='~/onion-monero-blockchain-explorer/build/xmrblocks -t --port 8082 --mainnet-url "http://139.162.32.245:8081" --enable-pusher --enable-emission-monitor'
 ```
-
-These are aliases similar to those used for http://139.162.32.245:8081/ and http://139.162.32.245:8082/, respectively.
 
 ## Enable Monero emission
 
@@ -257,15 +260,6 @@ The values given, can be checked using Monero daemon's  `print_coinbase_tx_sum` 
 For example, for the above example: `print_coinbase_tx_sum 0 1313449`.
 
 To disable the monitor, simply restart the explorer without `--enable-emission-monitor` flag.
-
-## Enable JavaScript for decoding proving transactions
-
-By default, decoding and proving tx's outputs are done on the server side. To do this on the client side
-(private view and tx keys are not send to the server) JavaScript-based decoding can be enabled:
-
-```
-xmrblocks --enable-js
-```
 
 ## Enable SSL (https)
 

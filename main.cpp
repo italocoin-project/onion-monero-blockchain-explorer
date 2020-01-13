@@ -41,6 +41,7 @@ struct jsonresponse: public crow::response
 int
 main(int ac, const char* av[])
 {
+
     // get command line options
     xmreg::CmdLineOptions opts {ac, av};
 
@@ -64,22 +65,19 @@ main(int ac, const char* av[])
     auto mainnet_url                   = opts.get_option<string>("mainnet-url");
     auto mempool_info_timeout_opt      = opts.get_option<string>("mempool-info-timeout");
     auto mempool_refresh_time_opt      = opts.get_option<string>("mempool-refresh-time");
+    auto daemon_login_opt              = opts.get_option<string>("daemon-login");
     auto testnet_opt                   = opts.get_option<bool>("testnet");
     auto stagenet_opt                  = opts.get_option<bool>("stagenet");
     auto enable_key_image_checker_opt  = opts.get_option<bool>("enable-key-image-checker");
     auto enable_output_key_checker_opt = opts.get_option<bool>("enable-output-key-checker");
     auto enable_autorefresh_option_opt = opts.get_option<bool>("enable-autorefresh-option");
     auto enable_pusher_opt             = opts.get_option<bool>("enable-pusher");
-    auto enable_js_opt                 = opts.get_option<bool>("enable-js");
+    auto enable_randomx_opt            = opts.get_option<bool>("enable-randomx");
     auto enable_mixin_details_opt      = opts.get_option<bool>("enable-mixin-details");
     auto enable_json_api_opt           = opts.get_option<bool>("enable-json-api");
     auto enable_as_hex_opt             = opts.get_option<bool>("enable-as-hex");
-    auto enable_tx_cache_opt           = opts.get_option<bool>("enable-tx-cache");
     auto concurrency_opt               = opts.get_option<size_t>("concurrency");
-    auto enable_block_cache_opt        = opts.get_option<bool>("enable-block-cache");
-    auto show_cache_times_opt          = opts.get_option<bool>("show-cache-times");
     auto enable_emission_monitor_opt   = opts.get_option<bool>("enable-emission-monitor");
-
 
 
     bool testnet                      {*testnet_opt};
@@ -96,17 +94,14 @@ main(int ac, const char* av[])
         cryptonote::network_type::STAGENET : cryptonote::network_type::MAINNET;
 
     bool enable_pusher                {*enable_pusher_opt};
-    bool enable_js                    {*enable_js_opt};
+    bool enable_randomx               {*enable_randomx_opt};
     bool enable_key_image_checker     {*enable_key_image_checker_opt};
     bool enable_autorefresh_option    {*enable_autorefresh_option_opt};
     bool enable_output_key_checker    {*enable_output_key_checker_opt};
     bool enable_mixin_details         {*enable_mixin_details_opt};
     bool enable_json_api              {*enable_json_api_opt};
     bool enable_as_hex                {*enable_as_hex_opt};
-    bool enable_tx_cache              {*enable_tx_cache_opt};
-    bool enable_block_cache           {*enable_block_cache_opt};
     bool enable_emission_monitor      {*enable_emission_monitor_opt};
-    bool show_cache_times             {*show_cache_times_opt};
 
 
     // set  monero log output level
@@ -128,9 +123,41 @@ main(int ac, const char* av[])
     string ssl_crt_file;
     string ssl_key_file;
 
+    xmreg::rpccalls::login_opt daemon_rpc_login {};
+
+
+    if (daemon_login_opt)
+    {
+
+       string user {};
+       epee::wipeable_string pass {};
+
+       string daemon_login = *daemon_login_opt;
+
+       size_t colon_location = daemon_login.find_first_of(':');
+
+       if (colon_location != std::string::npos)
+       {
+           // have colon for user:password
+           user = daemon_login.substr(0, colon_location);
+           pass  = daemon_login.substr(colon_location + 1);
+       }
+       else
+       {
+          user = *daemon_login_opt;
+       }
+
+       daemon_rpc_login = epee::net_utils::http::login {user, pass};
+
+       //cout << "colon_location: " << colon_location << endl;
+       // cout << "user: " << user << endl;
+       // cout << "pass: " << std::string(pass.data(), pass.size()) << endl;
+    }
+
+
     // check if ssl enabled and files exist
 
-    if (ssl_crt_file_opt and ssl_key_file_opt)
+    if (ssl_crt_file_opt && ssl_key_file_opt)
     {
         if (!boost::filesystem::exists(boost::filesystem::path(*ssl_crt_file_opt)))
         {
@@ -242,6 +269,8 @@ main(int ac, const char* av[])
             = nettype;
     xmreg::MempoolStatus::deamon_url
             = deamon_url;
+    xmreg::MempoolStatus::login
+            = daemon_rpc_login;
     xmreg::MempoolStatus::set_blockchain_variables(
             &mcore, core_storage);
 
@@ -276,20 +305,18 @@ main(int ac, const char* av[])
                           deamon_url,
                           nettype,
                           enable_pusher,
-                          enable_js,
+                          enable_randomx,
                           enable_as_hex,
                           enable_key_image_checker,
                           enable_output_key_checker,
                           enable_autorefresh_option,
                           enable_mixin_details,
-                          enable_tx_cache,
-                          enable_block_cache,
-                          show_cache_times,
                           no_blocks_on_index,
                           mempool_info_timeout,
                           *testnet_url,
                           *stagenet_url,
-                          *mainnet_url);
+                          *mainnet_url,
+                          daemon_rpc_login);
 
     // crow instance
     crow::SimpleApp app;
@@ -314,6 +341,11 @@ main(int ac, const char* av[])
     ([&](size_t block_height) {
         return myxmr::htmlresponse(xmrblocks.show_block(block_height));
     });
+    
+    CROW_ROUTE(app, "/randomx/<uint>")
+    ([&](size_t block_height) {
+        return myxmr::htmlresponse(xmrblocks.show_randomx(block_height));
+    });
 
     CROW_ROUTE(app, "/block/<string>")
     ([&](string block_hash) {
@@ -326,6 +358,16 @@ main(int ac, const char* av[])
         return myxmr::htmlresponse(
                 xmrblocks.show_tx(remove_bad_chars(tx_hash)));
     });
+    if (enable_autorefresh_option)
+    {
+        CROW_ROUTE(app, "/tx/<string>/autorefresh")
+        ([&](string tx_hash) {
+            bool refresh_page {true};
+            uint16_t with_ring_signatures {0};
+            return myxmr::htmlresponse(
+                xmrblocks.show_tx(remove_bad_chars(tx_hash), with_ring_signatures, refresh_page));
+        });
+    }
 
     if (enable_as_hex)
     {
@@ -375,6 +417,15 @@ main(int ac, const char* av[])
                 xmrblocks.show_tx(remove_bad_chars(tx_hash), 
                     with_ring_signatures));
     });
+    if (enable_autorefresh_option)
+    {
+        CROW_ROUTE(app, "/tx/<string>/<uint>/autorefresh")
+        ([&](string tx_hash, uint16_t with_ring_signature) {
+            bool refresh_page {true};
+            return myxmr::htmlresponse(
+                xmrblocks.show_tx(remove_bad_chars(tx_hash), with_ring_signature, refresh_page));
+        });
+    }
 
     CROW_ROUTE(app, "/myoutputs").methods("POST"_method)
     ([&](const crow::request& req) -> myxmr::htmlresponse
@@ -603,64 +654,6 @@ main(int ac, const char* av[])
         return text;
     });
 
-    if (enable_js)
-    {
-        cout << "Enable JavaScript checking of outputs and proving txs\n";
-
-        CROW_ROUTE(app, "/js/jquery.min.js")
-        ([&]() {
-            return xmrblocks.get_js_file("jquery.min.js");
-        });
-
-        CROW_ROUTE(app, "/js/crc32.js")
-        ([&]() {
-            return xmrblocks.get_js_file("crc32.js");
-        });
-
-        CROW_ROUTE(app, "/js/biginteger.js")
-        ([&]() {
-            return xmrblocks.get_js_file("biginteger.js");
-        });
-
-        CROW_ROUTE(app, "/js/crypto.js")
-        ([&]() {
-            return xmrblocks.get_js_file("crypto.js");
-        });
-
-        CROW_ROUTE(app, "/js/config.js")
-        ([&]() {
-            return xmrblocks.get_js_file("config.js");
-        });
-
-        CROW_ROUTE(app, "/js/nacl-fast-cn.js")
-        ([&]() {
-            return xmrblocks.get_js_file("nacl-fast-cn.js");
-        });
-
-        CROW_ROUTE(app, "/js/base58.js")
-        ([&]() {
-            return xmrblocks.get_js_file("base58.js");
-        });
-
-        CROW_ROUTE(app, "/js/cn_util.js")
-        ([&]() {
-            return xmrblocks.get_js_file("cn_util.js");
-        });
-
-        CROW_ROUTE(app, "/js/sha3.js")
-        ([&]() {
-            return xmrblocks.get_js_file("sha3.js");
-        });
-
-        CROW_ROUTE(app, "/js/all_in_one.js")
-        ([&]() {
-            // /js/all_in_one.js file does not exist. it is generated on the fly
-            // from the above real files.
-            return xmrblocks.get_js_file("all_in_one.js");
-        });
-
-    } // if (enable_js)
-
     if (enable_json_api)
     {
 
@@ -850,7 +843,7 @@ main(int ac, const char* av[])
         ([&]() {
             uint64_t page_no {0};
             bool refresh_page {true};
-            return xmrblocks.index2(page_no, refresh_page);
+            return myxmr::htmlresponse(xmrblocks.index2(page_no, refresh_page));
         });
     }
 
