@@ -67,7 +67,7 @@
   }
   
   #loading-spinner {
-    color: green;
+    color: #009e73;
     position: absolute;
     top: 50vh;
     left: 50vw;
@@ -130,7 +130,7 @@
   }
   
   td>a {
-    color: #00abff !important;
+    color: #009e73 !important;
   }
   
   td>a:hover {
@@ -139,7 +139,7 @@
   
   a,
   .clickAbleSpan {
-    color: #00abff !important;
+    color: #009e73 !important;
   }
   
   .clickAbleSpan {
@@ -158,7 +158,7 @@
   
   a:link {
     text-decoration: none;
-    color: #00abff;
+    color: #009e73;
   }
   
   a:visited {
@@ -168,7 +168,7 @@
   
   a:hover {
     text-decoration: none;
-    color: #00abff;
+    color: #009e73;
   }
   
   a:active {
@@ -181,16 +181,11 @@
     text-align: center;
   }
   
-  /*.style-1 input[type="text"] {
-      padding: 2px;
+  .style-1 input[type="text"] {
+      padding: 5px;
       border: solid 1px #dcdcdc;
       transition: box-shadow 0.3s, border 0.3s;
   }
-  .style-1 input[type="text"]:focus,
-  .style-1 input[type="text"].focus {
-      border: solid 1px #707070;
-      box-shadow: 0 0 5px 1px #969696;
-  }*/
   
   .tabs {
     position: relative;
@@ -302,8 +297,8 @@
     float: left;
   }
   
-  .greenSvg {
-    fill: #00abff;
+  .#009e73Svg {
+    fill: #009e73;
   }
   
   .logo {
@@ -419,13 +414,12 @@
   .formNavbar {
     position: relative;
     float: left;
-    top: 11px;
   }
   
   .roseButton {
     margin-top: 10px;
     margin-bottom: 10px;
-    background-color: #2895f1; /*#e91e63;*/
+    background-color: #0e7435; /*#0e7435;*/
     color: #fff;
     border: none;
     padding: 10px;
@@ -433,6 +427,17 @@
     box-shadow: 0 2px 2px 0 rgba(40, 149, 241, .14), 0 3px 1px -2px rgba(40, 149, 241, .2), 0 1px 5px 0 rgba(40, 149, 241, .12); /*0 2px 2px 0 rgba(233, 30, 99, .14), 0 3px 1px -2px rgba(233, 30, 99, .2), 0 1px 5px 0 rgba(233, 30, 99, .12);*/
     border-radius: 3px;
   }
+
+  .roseButtons {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #009e73;
+    color: #fff;
+    border: none;
+    padding: 5px;
+    outline: none;
+    border-radius: 3px;
+}
   
   table {
     border-spacing: 0;
