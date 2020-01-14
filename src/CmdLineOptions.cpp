@@ -18,7 +18,7 @@ namespace xmreg
         p.add("txhash", -1);
 
         options_description desc(
-                "xmrblocks, Onion Italo Blockchain Explorer");
+                "xtablocks, Italo Blockchain Explorer");
 
         desc.add_options()
                 ("help,h", value<bool>()->default_value(false)->implicit_value(true),
@@ -69,8 +69,6 @@ namespace xmreg
                  "path to crt file for ssl (https) functionality")
                 ("ssl-key-file", value<string>(),
                  "path to key file for ssl (https) functionality")
-                ("daemon-login", value<string>(),
-                 "Specify username[:password] for daemon RPC client")
                 ("deamon-url,d", value<string>()->default_value("http:://127.0.0.1:13102"),
                  "Italo daemon url");
 
