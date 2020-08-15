@@ -46,7 +46,6 @@ extern  __thread randomx_vm *rx_vm;
 
 #include <algorithm>
 #include <limits>
-#include <cmath>
 #include <ctime>
 #include <future>
 #include <type_traits>
@@ -764,12 +763,12 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     // perapre network info mstch::map for the front page
     string hash_rate;
 
-    if ((current_network_info.difficulty*48/15) > 1e6)
-        hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*48/15/1.0e6);
-    else if ((current_network_info.difficulty*48/15) > 1e3)
-        hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*48/15/1.0e3);
+    if ((current_network_info.difficulty*32/15) > 1e6)
+        hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*32/15/1.0e6);
+    else if ((current_network_info.difficulty*32/15) > 1e3)
+        hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*32/15/1.0e3);
     else
-        hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*48/15);
+        hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*32/15);
 
     pair<string, string> network_info_age = get_age(local_copy_server_timestamp,
                                                     current_network_info.info_timestamp);
@@ -5279,7 +5278,7 @@ json_outputs(string tx_hash_str,
     if (!xmreg::parse_str_address(address_str,  address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse italo address: " + address_str;
+        j_response["message"] = "Cant parse Italo address: " + address_str;
         return j_response;
 
     }
@@ -5484,7 +5483,7 @@ json_outputsblocks(string _limit,
     if (!xmreg::parse_str_address(address_str, address_info, nettype))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant parse italo address: " + address_str;
+        j_response["message"] = "Cant parse Italo address: " + address_str;
         return j_response;
 
     }
@@ -5633,7 +5632,7 @@ json_networkinfo()
     if (!get_italo_network_info(j_info))
     {
         j_response["status"]  = "error";
-        j_response["message"] = "Cant get italo network info";
+        j_response["message"] = "Cant get Italo network info";
         return j_response;
     }
 
@@ -5703,20 +5702,6 @@ json_emission()
     return j_response;
 }
 
-string
-txt_emission()
-{
-    // get basic network info
-    if (!CurrentBlockchainStatus::is_thread_running())
-    {
-		return "";
-    }
-    else
-    {
-        CurrentBlockchainStatus::Emission current_values = CurrentBlockchainStatus::get_emission();
-        return std::to_string(current_values.coinbase / pow(10,12));
-    }
-}
 
 /*
       * Lets use this json api convention for success and error
