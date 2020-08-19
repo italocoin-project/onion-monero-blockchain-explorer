@@ -46,7 +46,9 @@ extern  __thread randomx_vm *rx_vm;
 
 #include <algorithm>
 #include <limits>
+#include <cmath>
 #include <ctime>
+
 #include <future>
 #include <type_traits>
 
@@ -756,12 +758,12 @@ index2(uint64_t page_no = 0, bool refresh_page = false)
     // perapre network info mstch::map for the front page
     string hash_rate;
 
-    if ((current_network_info.difficulty*32/15) > 1e6)
-        hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*32/15/1.0e6);
-    else if ((current_network_info.difficulty*32/15) > 1e3)
-        hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*32/15/1.0e3);
+    if ((current_network_info.difficulty*48/15) > 1e6)
+        hash_rate = fmt::format("{:0.3f} Mgps", current_network_info.difficulty*48/15/1.0e6);
+    else if ((current_network_info.difficulty*48/15) > 1e3)
+        hash_rate = fmt::format("{:0.3f} kgps", current_network_info.difficulty*48/15/1.0e3);
     else
-        hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*32/15);
+        hash_rate = fmt::format("{:d} gps", current_network_info.difficulty*48/15);
 
     pair<string, string> network_info_age = get_age(local_copy_server_timestamp,
                                                     current_network_info.info_timestamp);
@@ -1111,7 +1113,7 @@ show_block(uint64_t _blk_height)
     cryptonote::difficulty_type blk_difficulty = core_storage->get_db().get_block_difficulty(_blk_height);
 
     string blk_cycle_str = pod_to_hex(blk.cycle);
-    for (int i = 0; i < 31; i++) blk_cycle_str.insert((31-i)*8, (i%16!=15)?" ":"\n");
+    for (int i = 0; i < 47; i++) blk_cycle_str.insert((47-i)*8, (i%16!=15)?" ":"\n");
 
 
     mstch::map context {
@@ -5705,7 +5707,7 @@ txt_emission()
     else
     {
         CurrentBlockchainStatus::Emission current_values = CurrentBlockchainStatus::get_emission();
-        return std::to_string(current_values.coinbase);
+        return std::to_string(current_values.coinbase / pow(10,12));
     }
 }
 
